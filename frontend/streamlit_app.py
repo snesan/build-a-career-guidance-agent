@@ -13,6 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import requests
 import streamlit as st
 
+from app.database import save_assessment
 from app.questions import QUESTIONS
 from app.recommendations import build_recommendation
 from app.scoring import calculate_scores
@@ -29,7 +30,7 @@ st.caption("A counselor-style assessment for engineering students. It asks a ful
 with st.sidebar:
     st.header("Assessment")
     st.write(f"{len(QUESTIONS)} structured questions")
-    use_api = st.toggle("Save results to SQLite through FastAPI", value=True)
+    use_api = st.toggle("Use FastAPI backend", value=False)
     st.divider()
     st.write("Tracks covered:")
     st.write("AI, data, software, cloud, QA, cybersecurity, business analysis, and UI/UX.")
@@ -46,7 +47,9 @@ def submit_to_api(student_name: str, answers: dict) -> dict:
 
 
 def local_recommendation(answers: dict) -> dict:
-    return {"assessment_id": None, "recommendation": build_recommendation(calculate_scores(answers))}
+    recommendation = build_recommendation(calculate_scores(answers))
+    assessment_id = save_assessment(student_name, answers, recommendation)
+    return {"assessment_id": assessment_id, "recommendation": recommendation}
 
 
 student_name = st.text_input("Student name", placeholder="Enter your name")
@@ -88,6 +91,8 @@ if submitted:
 
     recommendation = result["recommendation"]
     st.success("Assessment complete")
+    if result.get("assessment_id"):
+        st.caption(f"Saved assessment #{result['assessment_id']}")
 
     col1, col2 = st.columns(2)
     with col1:
