@@ -120,4 +120,5 @@ if submitted:
 
     with st.expander("Score details"):
         sorted_scores = sorted(recommendation["scores"].items(), key=lambda item: item[1], reverse=True)
-        st.bar_chart({track: score for track, score in sorted_scores})
+        for track, score in sorted_scores:
+            st.progress(min(score / 40, 1.0), text=f"{track}: {score:.1f}")
