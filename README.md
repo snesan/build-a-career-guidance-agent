@@ -24,6 +24,12 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+For the local FastAPI backend, install the backend extras:
+
+```bash
+pip install -r requirements-backend.txt
+```
+
 Start the backend:
 
 ```bash
@@ -41,3 +47,19 @@ Open:
 ```text
 http://localhost:8501
 ```
+
+## Deploy On Streamlit Community Cloud
+
+1. Push this project to a GitHub repository.
+2. Go to Streamlit Community Cloud and create a new app.
+3. Select the repository, branch, and set the main file path to:
+
+```text
+streamlit_app.py
+```
+
+4. Deploy.
+
+The deployed Streamlit app runs standalone. It uses the same modular scoring and recommendation engine, and saves assessments to SQLite from the Streamlit process. The FastAPI backend remains available for local/API use, but is not required for Streamlit Cloud.
+
+Streamlit Cloud uses `requirements.txt`, which intentionally excludes FastAPI and Pydantic so deployment does not need to build `pydantic-core`.
